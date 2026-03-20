@@ -1,10 +1,59 @@
 # NotebookLM MCP Server Integration
 
-This directory includes a NotebookLM MCP Server wrapper (`notebooklm_mcp.py`) that enables Claude agents to interact directly with Google NotebookLM.
+This directory includes two approaches to integrate NotebookLM with Claude agents:
+
+1. **Direct API approach** (`notebooklm_api_mcp.py`) - Recommended for most users
+2. **CLI wrapper approach** (`notebooklm_mcp.py`) - Uses the `notebooklm-mcp-cli` package
 
 ## Setup
 
-### 1. Install Dependencies
+### Option 1: Direct API (Recommended)
+
+The direct API approach works around authentication issues by making direct HTTP requests to NotebookLM:
+
+#### 1. Install Dependencies
+
+```bash
+pip install requests mcp
+```
+
+#### 2. Set Up Authentication
+
+Save your authentication cookies to `~/.notebooklm/cookies.txt`:
+
+```bash
+mkdir -p ~/.notebooklm
+# Paste your cookies (from browser) into this file:
+echo "SID=...; SAPISID=...; APISID=..." > ~/.notebooklm/cookies.txt
+```
+
+Or set them via environment variable:
+
+```bash
+export NOTEBOOKLM_COOKIES="SID=...; SAPISID=...; APISID=..."
+```
+
+#### 3. Configure Your Agent
+
+Add the direct API MCP server to your agent:
+
+```python
+from agents.agent import Agent
+
+agent = Agent(
+    name="NotebookLM Assistant",
+    system="You are an AI assistant with access to NotebookLM.",
+    mcp_servers=[
+        {
+            "type": "stdio",
+            "command": "python3",
+            "args": ["agents/tools/notebooklm_api_mcp.py"]
+        }
+    ]
+)
+```
+
+### Option 2: CLI Wrapper
 
 The NotebookLM MCP server is provided by the `notebooklm-mcp-cli` package:
 
@@ -12,16 +61,51 @@ The NotebookLM MCP server is provided by the `notebooklm-mcp-cli` package:
 pip install notebooklm-mcp-cli
 ```
 
-### 2. Configure Your Agent
+#### 4. Test the Connection
 
-Add the NotebookLM MCP server to your agent's configuration:
+Test your setup with a simple Python script:
+
+```python
+from agents.tools.notebooklm_api import NotebookLMAPI
+
+api = NotebookLMAPI()
+notebooks = api.list_notebooks()
+print(notebooks)
+```
+
+If this works, you're ready to use the MCP server with your agent!
+
+### Troubleshooting Direct API
+
+**403 Forbidden Error:** Your cookies may be expired or invalid. Get fresh cookies from your browser:
+1. Open https://notebooklm.google.com
+2. Open DevTools (F12) → Application → Cookies
+3. Copy relevant cookies (SID, SAPISID, APISID, etc.)
+4. Update `~/.notebooklm/cookies.txt`
+
+**Connection Error:** Verify:
+- You have internet connectivity
+- `requests` is installed: `pip install requests`
+- Your cookies are properly formatted
+
+### CLI Wrapper Approach
+
+If you prefer using the official nlm CLI:
+
+#### 1. Install Dependencies
+
+```bash
+pip install notebooklm-mcp-cli
+```
+
+#### 2. Configure Your Agent
 
 ```python
 from agents.agent import Agent
 
 agent = Agent(
     name="NotebookLM Assistant",
-    system="You are an AI assistant with access to NotebookLM. Help users research and analyze documents.",
+    system="You are an AI assistant with access to NotebookLM.",
     mcp_servers=[
         {
             "type": "stdio",
@@ -32,9 +116,9 @@ agent = Agent(
 )
 ```
 
-### 3. Authenticate
+#### 3. Authenticate
 
-When you first use NotebookLM tools, the agent will guide you to authenticate with Google:
+When you first use NotebookLM tools, you'll be guided to authenticate with Google:
 
 1. The agent will ask you to log in to NotebookLM
 2. A Chrome browser window will open automatically
@@ -45,14 +129,38 @@ When you first use NotebookLM tools, the agent will guide you to authenticate wi
 
 ## Available Tools
 
-The NotebookLM MCP server exposes 35+ tools for notebook management:
+### Direct API Tools (Recommended)
 
-- **Notebook Management**: `notebook_list`, `notebook_create`, `notebook_delete`, `notebook_get`
-- **Source Management**: `source_add`, `source_delete`, `source_list`, `source_sync`
-- **Audio Generation**: `audio_create`, `audio_get`, `audio_list`, `audio_download`
-- **Research**: `notebook_research`, `notebook_insights`, `notebook_outline`
-- **Studio Artifacts**: `artifact_create`, `artifact_get`, `artifact_list`
-- **And more!**
+The direct API MCP server exposes the following core tools:
+
+- **Notebook Management**:
+  - `notebook_list` - List all notebooks
+  - `notebook_create` - Create a new notebook
+  - `notebook_get` - Get notebook details
+  - `notebook_delete` - Delete a notebook
+
+- **Source Management**:
+  - `source_add` - Add source to notebook
+  - `source_list` - List sources in notebook
+  - `source_sync` - Sync notebook sources
+
+- **AI Analysis**:
+  - `notebook_insights` - Get AI insights for notebook
+
+- **Audio Generation**:
+  - `audio_generate` - Generate audio notes
+  - `audio_get` - Get generated audio
+
+### CLI Tools (CLI Wrapper)
+
+The `notebooklm-mcp-cli` based server exposes 35+ tools including:
+
+- Full notebook management (create, list, delete, get)
+- Source management (add, delete, sync)
+- Audio generation for research summaries
+- Insights and research analysis
+- Studio artifact creation
+- And more!
 
 ## Example Usage
 
@@ -99,7 +207,28 @@ print(f"MCP script exists: {os.path.exists(mcp_path)}")
 
 ## Architecture
 
-The integration uses the MCP (Model Context Protocol) to bridge Claude and NotebookLM:
+### Direct API Approach (Recommended)
+
+```
+Claude Agent
+    ↓
+MCPConnection (stdio)
+    ↓
+notebooklm_api_mcp.py
+    ↓
+notebooklm_api.py (direct HTTP client)
+    ↓
+Google NotebookLM API
+```
+
+This approach:
+- ✅ Works around nlm CLI authentication issues
+- ✅ Makes direct HTTPS requests with cookies
+- ✅ Provides immediate feedback
+- ✅ No browser automation required (for running)
+- ❌ Requires manual cookie management
+
+### CLI Wrapper Approach
 
 ```
 Claude Agent
@@ -113,4 +242,21 @@ notebooklm-mcp (official MCP server)
 Google NotebookLM API
 ```
 
-Each MCP tool is automatically wrapped by the `MCPTool` class and made available to the agent.
+This approach:
+- ✅ Official NotebookLM CLI
+- ✅ Full feature set (35+ tools)
+- ✅ Automatic authentication
+- ❌ May encounter 403 authentication errors on some accounts
+- ❌ Requires Chrome/Chromium for browser-based login
+
+## Choosing an Approach
+
+**Use Direct API if:**
+- You're getting 403 errors with the CLI
+- You prefer managing authentication yourself
+- You don't need advanced features
+
+**Use CLI Wrapper if:**
+- Authentication works for your account
+- You need advanced features (studio artifacts, etc.)
+- You prefer official support

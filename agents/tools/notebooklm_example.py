@@ -3,11 +3,17 @@
 """Example: Using NotebookLM with Claude Agent
 
 This script demonstrates how to create a Claude agent with NotebookLM MCP
-server access and use it to research and analyze documents.
+server access using the direct API approach.
 
 Prerequisites:
-    - pip install notebooklm-mcp-cli
+    - pip install requests mcp
     - Set ANTHROPIC_API_KEY environment variable
+    - Set up NotebookLM cookies in ~/.notebooklm/cookies.txt
+
+Example:
+    mkdir -p ~/.notebooklm
+    echo "SID=...; SAPISID=..." > ~/.notebooklm/cookies.txt
+    python notebooklm_example.py
 """
 
 import os
@@ -18,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agent import Agent, ModelConfig
+from notebooklm_api import NotebookLMAPI
 
 
 def main():
