@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "notebooklm": {
+      "command": "notebooklm-mcp",
+      "args": ["--transport", "stdio"],
+      "env": {
+        "NOTEBOOKLM_HL": "de"
+      }
+    }
+  }
+}
