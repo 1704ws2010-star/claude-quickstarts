@@ -1,0 +1,50 @@
+{
+  "tax_payer": {
+    "first_name": "Anna",
+    "last_name": "Schmidt",
+    "date_of_birth": "1988-05-12",
+    "tax_id": "12345678901",
+    "street": "Berliner Stra\u00dfe 42",
+    "city": "M\u00fcnchen",
+    "postal_code": "80804",
+    "email": null,
+    "phone": null
+  },
+  "year": 2024,
+  "incomes": [
+    {
+      "source": "employment",
+      "amount": 55000.0,
+      "year": 2024,
+      "description": "Bruttojahresgehalt",
+      "additional_data": {}
+    },
+    {
+      "source": "interest",
+      "amount": 350.0,
+      "year": 2024,
+      "description": "Zinsertr\u00e4ge",
+      "additional_data": {}
+    }
+  ],
+  "deductions": [
+    {
+      "category": "work_expenses",
+      "amount": 1200.0,
+      "description": "Homeoffice",
+      "receipts": []
+    },
+    {
+      "category": "donations",
+      "amount": 500.0,
+      "description": "Spenden an gemeinn\u00fctzige Organisationen",
+      "receipts": []
+    },
+    {
+      "category": "professional_development",
+      "amount": 800.0,
+      "description": "Fortbildungskosten",
+      "receipts": []
+    }
+  ]
+}
