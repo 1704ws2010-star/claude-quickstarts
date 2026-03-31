@@ -2,6 +2,7 @@
 
 import json
 import os
+import sys
 from pathlib import Path
 
 import click
@@ -149,7 +150,7 @@ def generate(file: str) -> None:
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         click.echo("Error: ANTHROPIC_API_KEY not set", err=True)
-        raise click.Exit(1)
+        sys.exit(1)
 
     with open(file) as f:
         data = json.load(f)
@@ -183,7 +184,7 @@ def validate(file: str) -> None:
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         click.echo("Error: ANTHROPIC_API_KEY not set", err=True)
-        raise click.Exit(1)
+        sys.exit(1)
 
     with open(file) as f:
         data = json.load(f)
@@ -208,7 +209,7 @@ def validate(file: str) -> None:
         click.echo("✓ Declaration is valid for Elster submission")
     else:
         click.echo("✗ Declaration has issues - review above", err=True)
-        raise click.Exit(1)
+        sys.exit(1)
 
 
 def asdict(obj: object) -> dict:
