@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Wohnung Berlin",
+    "address": "Schönhauser Allee 42",
+    "postal_code": "10435",
+    "city": "Berlin",
+    "type": "apartment",
+    "purchase_price": 450000,
+    "purchase_date": "2018-06-15",
+    "rental_income": 1200,
+    "expense_repairs": 800,
+    "expense_insurance": 450,
+    "expense_management": 150,
+    "expense_utilities": 2100,
+    "expense_loan_interest": 8500,
+    "notes": "3-Zimmer-Wohnung mit Balkon"
+  }
+]

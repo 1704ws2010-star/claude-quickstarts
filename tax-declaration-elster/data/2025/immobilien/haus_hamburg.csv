@@ -1,0 +1,2 @@
+name,address,postal_code,city,type,purchase_price,purchase_date,rental_income,expense_repairs,expense_insurance,expense_management,expense_utilities,expense_cleaning,notes
+Haus Hamburg,Leineweber Straße 15,21077,Hamburg,house,650000,2015-03-20,2500,2500,750,300,4800,1200,Einfamilienhaus mit Garten

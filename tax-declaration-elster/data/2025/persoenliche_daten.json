@@ -1,0 +1,11 @@
+{
+  "first_name": "Wolfgang",
+  "last_name": "Schachtner",
+  "date_of_birth": "1970-01-01",
+  "tax_id": "12345678901",
+  "street": "Musterstraße 1",
+  "city": "München",
+  "postal_code": "80801",
+  "email": "wolfgang@example.com",
+  "phone": "+49 89 123456"
+}
