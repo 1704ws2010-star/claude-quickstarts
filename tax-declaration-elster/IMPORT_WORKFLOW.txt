@@ -1,0 +1,287 @@
+╔════════════════════════════════════════════════════════════════════════════════════════════╗
+║                    📊 ELSTER TAX DECLARATION - IMPORT WORKFLOW                              ║
+╚════════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│ 📁 INPUT: Deine Dateien in data/2025/                                                   │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+
+  data/2025/
+  ├── 📄 persoenliche_daten.json      → Deine persönlichen Daten
+  ├── 📊 einnahmen.csv                → Gehalt, Zinsen, etc.
+  ├── 📋 werbungskosten.csv           → Homeoffice, Spenden, etc.
+  └── 🏠 immobilien/
+      ├── wohnung_berlin.json         → Mietliegenschaften
+      ├── haus_hamburg.csv
+      └── grundstueck.xlsx
+
+
+╔════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                   🔄 IMPORT PROZESS                                        ║
+╚════════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+PHASE 1: STAMMDATEN LADEN
+═════════════════════════════════════════════════════════════════════════════════════════════
+
+  persoenliche_daten.json
+        ↓
+  ┌─────────────────────────────────────────┐
+  │ Parse JSON                              │
+  │ Validiere: first_name, tax_id, etc.    │
+  │ Erstelle TaxPayer Objekt                │
+  └─────────────────────────────────────────┘
+        ↓
+  ✓ Wolfgang Schachtner
+  ✓ Steuer-ID: 12345678901
+  ✓ Adresse: Berliner Straße 42, München
+
+
+PHASE 2: EINNAHMEN LADEN
+═════════════════════════════════════════════════════════════════════════════════════════════
+
+  einnahmen.csv / .json / .xlsx
+        ↓
+  ┌─────────────────────────────────────────────────────┐
+  │ Detektiere Format (CSV / JSON / Excel)             │
+  │ Lese Spalten: source, amount, description          │
+  │ Konvertiere Dezimal: "5.000,50" → 5000.50         │
+  │ Erstelle Income Objekte                            │
+  └─────────────────────────────────────────────────────┘
+        ↓
+  ✓ employment: €65.000,00
+  ✓ interest: €450,00
+  ✓ capital_gains: €1.200,00
+        ↓
+  SUMME EINNAHMEN = €66.650,00
+
+
+PHASE 3: WERBUNGSKOSTEN LADEN
+═════════════════════════════════════════════════════════════════════════════════════════════
+
+  werbungskosten.csv / .json / .xlsx
+        ↓
+  ┌─────────────────────────────────────────────────────┐
+  │ Detektiere Format (CSV / JSON / Excel)             │
+  │ Lese Spalten: category, amount, description        │
+  │ Konvertiere Dezimal                                │
+  │ Erstelle Deduction Objekte                         │
+  └─────────────────────────────────────────────────────┘
+        ↓
+  ✓ work_expenses: €1.500,00
+  ✓ professional_development: €1.200,00
+  ✓ donations: €800,00
+  ✓ insurance: €2.400,00
+        ↓
+  SUMME ABZÜGE = €5.900,00
+
+
+PHASE 4: IMMOBILIEN LADEN (OPTIONAL)
+═════════════════════════════════════════════════════════════════════════════════════════════
+
+  immobilien/ Verzeichnis
+        ↓
+  ┌──────────────────────────────────────────────────────────┐
+  │ Für JEDE Datei (*.json / *.csv / *.xlsx):              │
+  │                                                          │
+  │  1. Detektiere Format                                  │
+  │  2. Lese Immobilien-Daten:                             │
+  │     - name, address, city                             │
+  │     - type, purchase_price, purchase_date             │
+  │     - rental_income (monatlich!)                       │
+  │     - expense_* (alle Werbungskosten)                  │
+  │  3. Berechne:                                          │
+  │     Jahresmiete = rental_income × 12                  │
+  │     Kosten = SUM(expense_repairs + insurance + ...)   │
+  │     Netto = Jahresmiete - Kosten                      │
+  │  4. Erstelle Property Objekt                          │
+  └──────────────────────────────────────────────────────────┘
+        ↓
+
+  📍 Wohnung Berlin (berlin.json)
+  ├─ Monatliche Miete: €1.200
+  ├─ Jahresmiete: €1.200 × 12 = €14.400
+  ├─ Werbungskosten:
+  │  ├─ Reparaturen: €800
+  │  ├─ Versicherung: €450
+  │  ├─ Verwaltung: €150
+  │  ├─ Nebenkosten: €2.100
+  │  └─ Darlehenszinsen: €8.500
+  │     ─────────────────────────
+  │     SUMME: €12.000
+  ├─ NETTOEINKOMMEN: €14.400 - €12.000 = €2.400
+  └─ Status: ✓
+
+  📍 Haus Hamburg (hamburg.csv)
+  ├─ Monatliche Miete: €2.500
+  ├─ Jahresmiete: €2.500 × 12 = €30.000
+  ├─ Werbungskosten:
+  │  ├─ Reparaturen: €2.500
+  │  ├─ Versicherung: €750
+  │  ├─ Verwaltung: €300
+  │  ├─ Nebenkosten: €4.800
+  │  └─ Reinigung: €1.200
+  │     ─────────────────────────
+  │     SUMME: €9.550
+  ├─ NETTOEINKOMMEN: €30.000 - €9.550 = €20.450
+  └─ Status: ✓
+
+        ↓
+  SUMME IMMOBILIEN-NETTO = €22.850
+
+
+PHASE 5: GESAMTBERECHNUNG
+═════════════════════════════════════════════════════════════════════════════════════════════
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │ GESAMTEINKOMMEN:                                            │
+  │   Arbeitseinkommen:        €65.000,00                       │
+  │   Kapitalerträge:           €1.650,00                       │
+  │   Immobilien-Netto:        €22.850,00                       │
+  │   ─────────────────────────────────────                     │
+  │   GESAMT:                  €89.500,00                       │
+  │                                                             │
+  │ ABZÜGE:                                                     │
+  │   Persönliche Abzüge:       €5.900,00                       │
+  │   (Immobilien-Kosten schon abgezogen)                       │
+  │   ─────────────────────────────────────                     │
+  │   GESAMT:                   €5.900,00                       │
+  │                                                             │
+  │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                     │
+  │ STEUERPFLICHTIGES EINKOMMEN: €83.600,00                     │
+  │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                     │
+  └─────────────────────────────────────────────────────────────┘
+
+
+PHASE 6: OUTPUT SPEICHERN
+═════════════════════════════════════════════════════════════════════════════════════════════
+
+  ┌──────────────────────────────────────────────┐
+  │ Erstelle JSON mit allen Daten:              │
+  │                                              │
+  │ declaration_imported.json:                  │
+  │ {                                           │
+  │   "tax_payer": {...},                       │
+  │   "year": 2025,                             │
+  │   "incomes": [...],                         │
+  │   "deductions": [...],                      │
+  │   "properties": [...]                       │
+  │ }                                           │
+  └──────────────────────────────────────────────┘
+        ↓
+  ✓ Datei gespeichert: declaration_imported.json
+
+
+╔════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                  📤 OUTPUT BEISPIEL                                        ║
+╚════════════════════════════════════════════════════════════════════════════════════════════╝
+
+📂 Importing from: data/2025
+✓ Imported to: declaration_imported.json
+
+📊 SUMMARY:
+  Taxpayer: Wolfgang Schachtner
+  Year: 2025
+
+💰 INCOME:
+  • employment: €65,000.00
+  • interest: €450.00
+  • capital_gains: €1,200.00
+  Total: €66,650.00
+
+🏠 PROPERTIES (2):
+  • Wohnung Berlin: €14,400.00 - €12,000.00 = €2,400.00
+  • Haus Hamburg: €30,000.00 - €9,550.00 = €20,450.00
+  Total net: €22,850.00
+
+📉 DEDUCTIONS:
+  • work_expenses: €1,500.00
+  • professional_development: €1,200.00
+  • donations: €800.00
+  • insurance: €2,400.00
+  Total: €5,900.00
+
+📊 TOTALS:
+  Total Income: €89,500.00
+  Total Deductions: €5,900.00
+  Taxable Income: €83,600.00
+
+
+╔════════════════════════════════════════════════════════════════════════════════════════════╗
+║                           🎯 MAGIC: WAS PASSIERT AUTOMATISCH?                             ║
+╚════════════════════════════════════════════════════════════════════════════════════════════╝
+
+✨ Dezimalkonvertierung:
+   Input:  "5.000,50" oder "5000,50" oder "5000.50"
+   Output: 5000.50 ✓
+
+✨ Währungsformatierung:
+   Input:  1200
+   Output: €1,200.00 ✓
+
+✨ Berechnung Jahresmiete:
+   Input:  rental_income = 1200
+   Output: 1200 × 12 = 14.400 ✓
+
+✨ Summierung Werbungskosten:
+   Input:  expense_repairs=800, expense_insurance=450, ...
+   Output: SUMME = 12.000 ✓
+
+✨ Nettoeinkommen:
+   Input:  Jahresmiete - Kosten
+   Output: 14.400 - 12.000 = 2.400 ✓
+
+✨ Gesamteinnahmen:
+   Input:  Alle Quellen
+   Output: Arbeit + Zinsen + Immobilien = 89.500 ✓
+
+✨ Steuerpflichtiges Einkommen:
+   Input:  Gesamteinkommen - Abzüge
+   Output: 89.500 - 5.900 = 83.600 ✓
+
+
+╔════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                  💡 PRO-TIPPS                                             ║
+╚════════════════════════════════════════════════════════════════════════════════════════════╝
+
+1️⃣ Mehrere Immobilien:
+   immobilien/
+   ├── berlin.json          ← 1 Immobilie
+   ├── hamburg.json         ← 1 Immobilie
+   ├── portfolio.json       ← Mehrere (als Array [])
+   └── grundstuecke.csv     ← Mehrere (mehrere Zeilen)
+
+2️⃣ Verschiedene Formate mischen:
+   ✓ einnahmen.csv + werbungskosten.json + immobilien.xlsx
+
+3️⃣ Deutsche Formate verwenden:
+   ✓ €1.200,50 (mit Punkt Tausendertrenner)
+   ✓ €1200,50 (ohne Tausendertrenner)
+   → Beide funktionieren automatisch!
+
+4️⃣ Flexible Spaltenreihenfolge:
+   CSV: source,amount,description
+   CSV: amount,source,description
+   → Funktioniert beide! (Name ist wichtig, Reihenfolge egal)
+
+
+╔════════════════════════════════════════════════════════════════════════════════════════════╗
+║                             🚀 KOMMANDOS ZUM TESTEN                                       ║
+╚════════════════════════════════════════════════════════════════════════════════════════════╝
+
+# Import starten
+python -m tax_declaration_elster.cli import-data data/2025 --year 2025
+
+# Mit Output-Datei
+python -m tax_declaration_elster.cli import-data data/2025 \
+  --output my_declaration.json
+
+# Andere Dateien anschauen
+cat declaration_imported.json | python -m json.tool
+
+# Validieren
+python -m tax_declaration_elster.cli validate declaration_imported.json
+
+# Formularanweisungen generieren (mit Claude AI)
+python -m tax_declaration_elster.cli generate declaration_imported.json
