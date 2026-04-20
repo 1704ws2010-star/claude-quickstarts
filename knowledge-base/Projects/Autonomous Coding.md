@@ -1,5 +1,7 @@
 # Autonomous Coding
 
+#autonomous-coding #python #important
+
 Ein autonomer Code-Generator und Entwicklungs-Agent. Kann selbstständig Aufgaben analysieren, Code schreiben und Lösungen entwickeln.
 
 ## 📋 Überblick

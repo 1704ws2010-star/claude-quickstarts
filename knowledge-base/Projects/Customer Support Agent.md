@@ -1,5 +1,7 @@
 # Customer Support Agent
 
+#customer-support #typescript #frequently-used
+
 Ein vollständiger TypeScript/React Customer-Support Chatbot mit moderner UI. Enthält mehrere Layout-Varianten (Full UI, Left/Right Sidebar, Chat-Only).
 
 ## 📋 Überblick

@@ -1,5 +1,7 @@
 # Financial Data Analyst
 
+#financial-analyst #typescript
+
 Ein Dashboard für Finanzanalyse mit Datenvisualisierung. Nutzt Recharts für interaktive Grafiken und bietet umfangreiche Analysemöglichkeiten.
 
 ## 📋 Überblick

@@ -1,5 +1,7 @@
 #  Computer-Use Demo
 
+#computer-use #python #docker #important #frequently-used
+
 Ein vollständiger Agent mit Zugriff auf Computer-Funktionen. Kann Screenshots nehmen, Mausclicks ausführen, Text eingeben und komplexe Aufgaben automatisieren.
 
 ## 📋 Überblick

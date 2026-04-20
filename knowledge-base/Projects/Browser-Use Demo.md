@@ -1,5 +1,7 @@
 # Browser-Use Demo
 
+#browser-use #python #important
+
 Ein Agent mit Browser-Automation und Web-Navigation Fähigkeiten. Kann Websites navigieren, Daten extrahieren und automatisierte Web-Interaktionen durchführen.
 
 ## 📋 Überblick
