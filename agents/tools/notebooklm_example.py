@@ -15,9 +15,9 @@ import sys
 from pathlib import Path
 
 # Add agents module to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from agent import Agent, ModelConfig
+from agents.agent import Agent, ModelConfig
 
 
 def main():

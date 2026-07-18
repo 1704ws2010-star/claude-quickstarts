@@ -8,8 +8,6 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.sse import sse_client
 from mcp.client.stdio import stdio_client
 
-from ..tools.mcp_tool import MCPTool
-
 
 class MCPConnection(ABC):
     """Base class for MCP server connections."""
@@ -117,8 +115,10 @@ def create_mcp_connection(config: dict[str, Any]) -> MCPConnection:
 async def setup_mcp_connections(
     mcp_servers: list[dict[str, Any]] | None,
     stack: AsyncExitStack,
-) -> list[MCPTool]:
+):
     """Set up MCP server connections and create tool interfaces."""
+    from ..tools.mcp_tool import MCPTool
+
     if not mcp_servers:
         return []
 
